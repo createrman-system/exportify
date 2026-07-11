@@ -1,0 +1,6 @@
+@echo off
+echo Running installation check...
+call libinstall.bat
+echo Starting the application...
+call yarn dev
+pause

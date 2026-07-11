@@ -45,9 +45,10 @@ if not os.path.exists(csv_path):
     exit(1)
 
 # Базовые настройки yt-dlp
+ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib', 'ffmpegWin64', 'bin')
 ydl_opts = {
     'format': 'bestaudio/best',
-    'ffmpeg_location': 'C:/ai-tools/ffmpeg-master-latest-win64-gpl-shared/bin',
+    'ffmpeg_location': ffmpeg_path,
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'flac',

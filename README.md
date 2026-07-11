@@ -125,6 +125,14 @@ Certain search queries have special meaning:
 | `owner:[owner]` | Only show playlists owned by `[owner]` |
 
 
+## Quick Start (Windows)
+
+If you are on Windows, you can use the provided batch files to set up and run the project quickly:
+
+1. **`installers.bat`**: Run this first to install the main programs (**Python 3** and **Node.js**) if you don't have them yet.
+2. **`libinstall.bat`**: Run this to install the necessary libraries (`yt-dlp`, `mutagen`, and `yarn` dependencies).
+3. **`oneclickrun.bat`**: Run this to start both the frontend and backend server at once.
+
 ## Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -134,7 +142,7 @@ In the project directory, first run `yarn install` to set up dependencies.
 For the music download feature, you will also need:
 - [Python 3](https://www.python.org/downloads/)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) (`pip install yt-dlp`)
-- [FFmpeg](https://ffmpeg.org/download.html)
+- [FFmpeg](https://ffmpeg.org/download.html) (Included in `lib/ffmpegWin64` for Windows)
 - [Mutagen](https://mutagen.readthedocs.io/en/latest/) (`pip install mutagen`)
 
 Then you can run:
