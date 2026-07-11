@@ -11,6 +11,7 @@ As many users have noted, there is no way to export/archive/backup playlists fro
 ## Features
 
 - ⚙️ Optional inclusion of album, artist and audio features data in export files
+- 🎵 **Music download** (via YouTube) directly from exported playlists
 - 🔍 Playlist search with [advanced search syntax](#advanced-search-syntax) and results export
 - 🌓 Dark mode
 - 🗺 Available in 10 languages (English, French, Spanish, Italian, German, Portuguese, Swedish, Dutch, Japanese and Arabic)
@@ -27,6 +28,17 @@ As many users have noted, there is no way to export/archive/backup playlists fro
 4. Click the 'Export' button to export a playlist
 
 Click 'Export All' to save a zip file containing a CSV file for each playlist in your account. This may take a while when many playlists exist and/or they are large.
+
+### Music Download
+
+Exportify now supports downloading music tracks directly from your playlists. This feature uses `yt-dlp` to find and download the best quality audio from YouTube, converts it to FLAC, and embeds the correct metadata and album art.
+
+1. Ensure you have the backend server running (see [Development](#development))
+2. Click the 'Download Music' button next to any playlist
+3. Monitor progress in the bottom-right corner
+4. Once complete, a zip file containing all tracks will be automatically downloaded
+
+**Note:** This feature requires Python 3, `yt-dlp`, and `FFmpeg` to be installed on the host system.
 
 ### Re-importing Playlists
 
@@ -117,15 +129,28 @@ Certain search queries have special meaning:
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, first run `yarn install` to set up dependencies, then you can run:
+In the project directory, first run `yarn install` to set up dependencies.
+
+For the music download feature, you will also need:
+- [Python 3](https://www.python.org/downloads/)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (`pip install yt-dlp`)
+- [FFmpeg](https://ffmpeg.org/download.html)
+- [Mutagen](https://mutagen.readthedocs.io/en/latest/) (`pip install mutagen`)
+
+Then you can run:
+
+**`yarn dev`**
+
+Runs both the React frontend and the Express backend server concurrently.\
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the browser.
 
 **`yarn start`**
 
-Runs the app in the development mode.\
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the browser.
+Runs only the frontend app in development mode.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+**`yarn server`**
+
+Runs only the backend server (needed for music downloads).
 
 **`yarn test`**
 
@@ -146,12 +171,16 @@ In addition to [Create React App](https://github.com/facebook/create-react-app),
 * [react-i18next](https://react.i18next.com/) - internationalization framework
 * [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) - light-weight solution for testing React DOM nodes
 * [MSW](https://mswjs.io/) - network-level request mocking (more of my own thoughts [here](https://watsonbox.github.io/posts/2020/11/30/discovering-msw.html))
+* [Express](https://expressjs.com/) - Node.js web application framework (backend)
+* [yt-dlp](https://github.com/yt-dlp/yt-dlp) - YouTube download engine
+* [FFmpeg](https://ffmpeg.org/) - Audio processing and conversion
 
 ### History
 
 - 2015: Exportify is [born](https://github.com/watsonbox/exportify/commit/b284822e12c3adea8fb83258fdb00ec4690701e1)
 - 2020: [Major release](https://watsonbox.github.io/posts/2020/12/02/exportify-refresh.html) including search, artist and audio features, liked songs export, and a new rate limiting system
 - 2024: [Major release](https://watsonbox.github.io/posts/2024/09/04/exportify-updates.html) including dark mode, internationalization, and search enhancements
+- 2025: Music download support via YouTube and local backend server
 
 ## Notes
 

@@ -56,7 +56,7 @@ function App() {
   }
 
   return (
-    <div className="App container">
+    <div className="App container" style={{ paddingBottom: '100px' }}>
       <header className="App-header">
         <div className="d-sm-none d-block mb-5" />
         <TopMenu loggedIn={!!accessToken} />
@@ -68,6 +68,8 @@ function App() {
       </header>
 
       {view}
+
+      <div id="global-download-container" />
     </div>
   );
 }
