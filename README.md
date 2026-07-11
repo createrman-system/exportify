@@ -1,4 +1,3 @@
-[![Build Status](https://api.travis-ci.com/watsonbox/exportify.svg?branch=master)](https://travis-ci.com/github/watsonbox/exportify)
 
 <a href="https://exportify.app/"><img src="assets/screenshot.png"/></a>
 
@@ -195,7 +194,7 @@ In addition to [Create React App](https://github.com/facebook/create-react-app),
 - 2015: Exportify is [born](https://github.com/watsonbox/exportify/commit/b284822e12c3adea8fb83258fdb00ec4690701e1)
 - 2020: [Major release](https://watsonbox.github.io/posts/2020/12/02/exportify-refresh.html) including search, artist and audio features, liked songs export, and a new rate limiting system
 - 2024: [Major release](https://watsonbox.github.io/posts/2024/09/04/exportify-updates.html) including dark mode, internationalization, and search enhancements
-- 2025: Music download support via YouTube and local backend server
+- 2026: Music download support via YouTube and local backend server (now it [createrman-system](https://github.com/createrman-system) fork)
 
 ## Notes
 
@@ -232,7 +231,7 @@ And then open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the b
 
 ## Contributing
 
-1. Fork it ( https://github.com/watsonbox/exportify/fork )
+1. Fork it ( https://github.com/createrman-system/exportify/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
