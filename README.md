@@ -188,7 +188,7 @@ In addition to [Create React App](https://github.com/facebook/create-react-app),
 - 2015: Exportify is [born](https://github.com/watsonbox/exportify/commit/b284822e12c3adea8fb83258fdb00ec4690701e1)
 - 2020: [Major release](https://watsonbox.github.io/posts/2020/12/02/exportify-refresh.html) including search, artist and audio features, liked songs export, and a new rate limiting system
 - 2024: [Major release](https://watsonbox.github.io/posts/2024/09/04/exportify-updates.html) including dark mode, internationalization, and search enhancements
-- 2025: Music download support via YouTube and local backend server
+- 2026: Music download support via YouTube and local backend server (now it [createrman-system](https://github.com/createrman-system) fork)
 
 ## Notes
 
