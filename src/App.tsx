@@ -2,7 +2,7 @@ import './App.scss'
 import "./icons"
 
 import React, { useEffect, useState, useRef } from 'react'
-import { useTranslation, Translation } from "react-i18next"
+import { useTranslation, Translation, Trans } from "react-i18next"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import "url-search-params-polyfill"
 
@@ -46,8 +46,8 @@ function App() {
   if (searchParams.get('spotify_error')) {
     view = <div id="spotifyErrorMessage" className="lead">
       <p><FontAwesomeIcon icon={['fas', 'bolt']} style={{ fontSize: "50px", marginBottom: "20px" }} /></p>
-      <p>Oops, Exportify has encountered an unexpected error (5XX) while using the Spotify API. This kind of error is due to a problem on Spotify's side, and although it's rare, unfortunately all we can do is retry later.</p>
-      <p style={{ marginTop: "50px" }}>Keep an eye on the <a target="_blank" rel="noreferrer" href="https://status.spotify.dev/">Spotify Web API Status page</a> to see if there are any known problems right now, and then <a rel="noreferrer" href="?">retry</a>.</p>
+      <p><Translation>{(t) => t("error.spotify.message")}</Translation></p>
+      <p style={{ marginTop: "50px" }}><Trans i18nKey="error.spotify.status_link" components={{ a_status: <a target="_blank" rel="noreferrer" href="https://status.spotify.dev/" />, a_retry: <a rel="noreferrer" href="?" /> }} /></p>
     </div>
   } else if (accessToken) {
     view = <PlaylistTable accessToken={accessToken!} onSetSubtitle={onSetSubtitle} />

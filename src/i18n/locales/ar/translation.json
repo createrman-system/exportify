@@ -42,7 +42,13 @@
     "public": "عام؟",
     "collaborative": "تعاوني؟",
     "not_supported": "هذه القائمة غير مدعومة",
-    "export": "تصدير"
+    "export": "تصدير",
+    "export_csv": "تصدير CSV",
+    "download_music": "تحميل الموسيقى",
+    "downloading": "جاري التحميل: {{playlistName}}",
+    "preparing_download": "جاري تحضير التحميل...",
+    "finishing_download": "تم! جاري تحميل ملف zip...",
+    "error_preparing_csv": "خطأ في تحضير CSV"
   },
   "track": {
     "track_uri": "رابط الأغنية (URI)",

@@ -46,6 +46,12 @@ i18n
       },
       tr: {
         translations: require('./locales/tr/translation.json')
+      },
+      ru: {
+        translations: require('./locales/ru/translation.json')
+      },
+      uk: {
+        translations: require('./locales/uk/translation.json')
       }
     },
     ns: ['translations'],

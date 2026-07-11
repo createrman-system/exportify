@@ -42,7 +42,13 @@
     "public": "Offentlig?",
     "collaborative": "Samarbetsvillig?",
     "not_supported": "Denna spellista stöds inte",
-    "export": "Exportera"
+    "export": "Exportera",
+    "export_csv": "Exportera CSV",
+    "download_music": "Ladda ner musik",
+    "downloading": "Laddar ner: {{playlistName}}",
+    "preparing_download": "Förbereder nedladdning...",
+    "finishing_download": "Klart! Laddar ner zip...",
+    "error_preparing_csv": "Fel vid förberedelse av CSV"
   },
   "track": {
     "track_uri": "Låtens URI",

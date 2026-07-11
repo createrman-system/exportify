@@ -42,7 +42,13 @@
     "public": "公開？",
     "collaborative": "共同作成？",
     "not_supported": "このプレイリストはサポートされていません",
-    "export": "エクスポート"
+    "export": "エクスポート",
+    "export_csv": "CSVエクスポート",
+    "download_music": "音楽をダウンロード",
+    "downloading": "ダウンロード中: {{playlistName}}",
+    "preparing_download": "ダウンロードの準備中...",
+    "finishing_download": "完了！Zipをダウンロード中...",
+    "error_preparing_csv": "CSV準備エラー"
   },
   "track": {
     "track_uri": "トラックURI",

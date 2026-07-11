@@ -42,7 +42,13 @@
     "public": "Pubblica?",
     "collaborative": "Collaborativa?",
     "not_supported": "Questa playlist non è supportata",
-    "export": "Esporta"
+    "export": "Esporta",
+    "export_csv": "Esporta CSV",
+    "download_music": "Scarica musica",
+    "downloading": "Download di: {{playlistName}}",
+    "preparing_download": "Preparazione download...",
+    "finishing_download": "Finito! Download dello zip...",
+    "error_preparing_csv": "Errore nella preparazione del CSV"
   },
   "track": {
     "track_uri": "URI della traccia",

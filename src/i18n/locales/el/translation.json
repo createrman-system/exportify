@@ -42,7 +42,13 @@
     "public": "Δημόσια;",
     "collaborative": "Συνεργατική;",
     "not_supported": "Αυτή η λίστα δεν υποστηρίζεται",
-    "export": "Εξαγωγή"
+    "export": "Εξαγωγή",
+    "export_csv": "Εξαγωγή CSV",
+    "download_music": "Λήψη μουσικής",
+    "downloading": "Λήψη: {{playlistName}}",
+    "preparing_download": "Προετοιμασία λήψης...",
+    "finishing_download": "Ολοκληρώθηκε! Λήψη zip...",
+    "error_preparing_csv": "Σφάλμα προετοιμασίας CSV"
   },
   "track": {
     "track_uri": "URI κομματιού",

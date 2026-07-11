@@ -42,7 +42,13 @@
     "public": "Öffentlich?",
     "collaborative": "Kollaborativ?",
     "not_supported": "Diese Playlist wird nicht unterstützt",
-    "export": "Exportieren"
+    "export": "Exportieren",
+    "export_csv": "CSV exportieren",
+    "download_music": "Musik herunterladen",
+    "downloading": "Lade herunter: {{playlistName}}",
+    "preparing_download": "Musik-Download wird vorbereitet...",
+    "finishing_download": "Fertig! Zip wird heruntergeladen...",
+    "error_preparing_csv": "Fehler beim Vorbereiten der CSV"
   },
   "track": {
     "track_uri": "Track-URI",
@@ -86,6 +92,12 @@
       "valence": "Valenz",
       "tempo": "Tempo",
       "time_signature": "Taktart"
+    }
+  },
+  "error": {
+    "spotify": {
+      "message": "Hoppla, Exportify ist bei der Nutzung der Spotify-API auf einen unerwarteten Fehler (5XX) gestoßen. Diese Art von Fehler liegt an einem Problem auf der Seite von Spotify, und obwohl dies selten vorkommt, können wir leider nur später erneut versuchen.",
+      "status_link": "Behalten Sie die <a_status>Spotify Web API Statusseite</a_status> im Auge, um zu sehen, ob es gerade bekannte Probleme gibt, und <a_retry>versuchen Sie es dann erneut</a_retry>."
     }
   }
 }

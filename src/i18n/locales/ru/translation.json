@@ -1,0 +1,103 @@
+{
+  "tagline": "Экспорт ваших плейлистов Spotify.",
+  "get_started": "Начать",
+  "subtitle": "плейлисты {{min}}-{{max}} из {{total}} для {{userId}}",
+  "subtitle_search": "{{total}} результатов с \"{{query}}\" в названии плейлиста",
+  "subtitle_search_advanced": "{{total}} результатов для расширенного запроса \"{{query}}\"",
+  "search": "Поиск",
+  "export_all": "Экспортировать всё",
+  "exporting_done": "Готово!",
+  "exporting_playlist": "Экспорт {{playlistName}}...",
+  "export_search_results": "Экспорт результатов",
+  "top_menu": {
+    "help": "Справка",
+    "toggle_dark_mode": "Переключить темную тему",
+    "change_language": "Сменить язык",
+    "change_user": "Сменить пользователя"
+  },
+  "config": {
+    "include_artists_data": "Включить данные об исполнителях",
+    "include_audio_features_data": "Включить аудиохарактеристики",
+    "include_album_data": "Включить данные об альбомах"
+  },
+  "help": {
+    "title": "Справочник",
+    "search_syntax": {
+      "title": "Расширенный синтаксис поиска",
+      "query": "Запрос",
+      "behavior": "Поведение",
+      "public_true": "Показывать только публичные плейлисты",
+      "public_false": "Показывать только приватные плейлисты",
+      "collaborative_true": "Показывать только совместные плейлисты",
+      "collaborative_false": "Не показывать совместные плейлисты",
+      "owner_me": "Показывать только мои плейлисты",
+      "owner_owner": "Показывать только плейлисты пользователя <code>[owner]</code>",
+      "more_detail": "Для получения дополнительной информации см. <a href='https://github.com/watsonbox/exportify' target='_blank' rel='noreferrer'>полную документацию проекта</a>."
+    }
+  },
+  "playlist": {
+    "name": "Название",
+    "owner": "Владелец",
+    "tracks": "Треки",
+    "public": "Публичный?",
+    "collaborative": "Совместный?",
+    "not_supported": "Этот плейлист не поддерживается",
+    "export": "Экспорт",
+    "export_csv": "Экспорт CSV",
+    "download_music": "Скачать музыку",
+    "downloading": "Загрузка: {{playlistName}}",
+    "preparing_download": "Подготовка к скачиванию...",
+    "finishing_download": "Готово! Скачивание архива...",
+    "error_preparing_csv": "Ошибка подготовки CSV"
+  },
+  "track": {
+    "track_uri": "Track URI",
+    "track_name": "Название трека",
+    "artist_uris": "Artist URI(s)",
+    "artist_names": "Исполнитель(и)",
+    "album_uri": "Album URI",
+    "album_name": "Название альбома",
+    "album_artist_uris": "Album Artist URI(s)",
+    "album_artist_names": "Исполнитель(и) альбома",
+    "album_release_date": "Дата выхода альбома",
+    "album_image_url": "URL обложки альбома",
+    "disc_number": "Номер диска",
+    "track_number": "Номер трека",
+    "track_duration": "Длительность (мс)",
+    "track_preview_url": "URL превью",
+    "explicit": "Нецензурный контент",
+    "popularity": "Популярность",
+    "isrc": "ISRC",
+    "is_playable": "Можно проигрывать",
+    "added_by": "Добавил",
+    "added_at": "Добавлено",
+    "album": {
+      "album_genres": "Жанры альбома",
+      "label": "Лейбл",
+      "copyrights": "Авторские права"
+    },
+    "artist": {
+      "artist_genres": "Жанры исполнителя"
+    },
+    "audio_features": {
+      "danceability": "Танцевальность",
+      "energy": "Энергичность",
+      "key": "Тональность",
+      "loudness": "Громкость",
+      "mode": "Лад",
+      "speechiness": "Речевая составляющая",
+      "acousticness": "Акустичность",
+      "instrumentalness": "Инструментальность",
+      "liveness": "Живое исполнение",
+      "valence": "Валентность",
+      "tempo": "Темп",
+      "time_signature": "Размер"
+    }
+  },
+  "error": {
+    "spotify": {
+      "message": "Упс, Exportify столкнулся с неожиданной ошибкой (5XX) при использовании Spotify API. Этот тип ошибки связан с проблемой на стороне Spotify, и хотя это случается редко, к сожалению, все, что мы можем сделать, это повторить попытку позже.",
+      "status_link": "Следите за <a_status>страницей статуса Spotify Web API</a_status>, чтобы узнать о текущих проблемах, а затем <a_retry>повторите попытку</a_retry>."
+    }
+  }
+}

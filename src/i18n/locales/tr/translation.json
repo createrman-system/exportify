@@ -42,7 +42,13 @@
     "public": "Herkese Açık?",
     "collaborative": "Ortak Liste mi?",
     "not_supported": "Bu çalma listesi desteklenmiyor",
-    "export": "Dışa Aktar"
+    "export": "Dışa Aktar",
+    "export_csv": "CSV Dışa Aktar",
+    "download_music": "Müzik İndir",
+    "downloading": "İndiriliyor: {{playlistName}}",
+    "preparing_download": "İndirme hazırlanıyor...",
+    "finishing_download": "Tamamlandı! Zip indiriliyor...",
+    "error_preparing_csv": "CSV hazırlama hatası"
   },
   "track": {
     "track_uri": "Parça URI",

@@ -1,0 +1,103 @@
+{
+  "tagline": "Експорт ваших плейлістів Spotify.",
+  "get_started": "Почати",
+  "subtitle": "плейлісти {{min}}-{{max}} із {{total}} для {{userId}}",
+  "subtitle_search": "{{total}} результатів із \"{{query}}\" у назві плейліста",
+  "subtitle_search_advanced": "{{total}} результатів для розширеного запиту \"{{query}}\"",
+  "search": "Пошук",
+  "export_all": "Експортувати все",
+  "exporting_done": "Готово!",
+  "exporting_playlist": "Експорт {{playlistName}}...",
+  "export_search_results": "Експорт результатів",
+  "top_menu": {
+    "help": "Довідка",
+    "toggle_dark_mode": "Перемкнути темну тему",
+    "change_language": "Змінити мову",
+    "change_user": "Змінити користувача"
+  },
+  "config": {
+    "include_artists_data": "Включити дані про виконавців",
+    "include_audio_features_data": "Включити аудіохарактеристики",
+    "include_album_data": "Включити дані про альбоми"
+  },
+  "help": {
+    "title": "Довідник",
+    "search_syntax": {
+      "title": "Розширений синтаксис пошуку",
+      "query": "Запит",
+      "behavior": "Поведінка",
+      "public_true": "Показувати тільки публічні плейлісти",
+      "public_false": "Показувати тільки приватні плейлісти",
+      "collaborative_true": "Показувати тільки спільні плейлісти",
+      "collaborative_false": "Не показувати спільні плейлісти",
+      "owner_me": "Показувати тільки мої плейлісти",
+      "owner_owner": "Показувати тільки плейлісти користувача <code>[owner]</code>",
+      "more_detail": "Для отримання додаткової інформації див. <a href='https://github.com/watsonbox/exportify' target='_blank' rel='noreferrer'>повну документацію проєкту</a>."
+    }
+  },
+  "playlist": {
+    "name": "Назва",
+    "owner": "Власник",
+    "tracks": "Треки",
+    "public": "Публічний?",
+    "collaborative": "Спільний?",
+    "not_supported": "Цей плейліст не підтримується",
+    "export": "Експорт",
+    "export_csv": "Експорт CSV",
+    "download_music": "Завантажити музику",
+    "downloading": "Завантаження: {{playlistName}}",
+    "preparing_download": "Підготовка до завантаження...",
+    "finishing_download": "Готово! Завантаження архіву...",
+    "error_preparing_csv": "Помилка підготовки CSV"
+  },
+  "track": {
+    "track_uri": "Track URI",
+    "track_name": "Назва треку",
+    "artist_uris": "Artist URI(s)",
+    "artist_names": "Виконавець(і)",
+    "album_uri": "Album URI",
+    "album_name": "Назва альбому",
+    "album_artist_uris": "Album Artist URI(s)",
+    "album_artist_names": "Виконавець(і) альбому",
+    "album_release_date": "Дата виходу альбому",
+    "album_image_url": "URL обкладинки альбому",
+    "disc_number": "Номер диска",
+    "track_number": "Номер треку",
+    "track_duration": "Тривалість (мс)",
+    "track_preview_url": "URL прев'ю",
+    "explicit": "Нецензурний вміст",
+    "popularity": "Популярність",
+    "isrc": "ISRC",
+    "is_playable": "Можна програвати",
+    "added_by": "Додав",
+    "added_at": "Додано",
+    "album": {
+      "album_genres": "Жανри альбому",
+      "label": "Лейбл",
+      "copyrights": "Авторські права"
+    },
+    "artist": {
+      "artist_genres": "Жανри виконавця"
+    },
+    "audio_features": {
+      "danceability": "Танцювальність",
+      "energy": "Енергійність",
+      "key": "Тональність",
+      "loudness": "Гучність",
+      "mode": "Лад",
+      "speechiness": "Мовленнєвість",
+      "acousticness": "Акустичність",
+      "instrumentalness": "Інструментальність",
+      "liveness": "Живе виконання",
+      "valence": "Валентність",
+      "tempo": "Темп",
+      "time_signature": "Розмір"
+    }
+  },
+  "error": {
+    "spotify": {
+      "message": "Упс, Exportify зіткнувся з несподіваною помилкою (5XX) під час використання Spotify API. Цей тип помилки пов'язаний з проблемою на стороні Spotify, і хоча це трапляється рідко, на жаль, все, що ми можемо зробити, це повторити спробу пізніше.",
+      "status_link": "Слідкуйте за <a_status>сторінкою статусу Spotify Web API</a_status>, щоб дізнатися про поточні проблеми, а потім <a_retry>повторіть спробу</a_retry>."
+    }
+  }
+}

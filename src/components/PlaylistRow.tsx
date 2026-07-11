@@ -14,7 +14,7 @@ interface PlaylistRowProps extends WithTranslation {
   config: any
 }
 
-const GlobalDownloadProgress = ({ progress, message, playlistName }: { progress: number, message: string, playlistName: string }): any => {
+const GlobalDownloadProgress = ({ progress, message, playlistName, t }: { progress: number, message: string, playlistName: string, t: any }): any => {
   const container = document.getElementById('global-download-container');
   if (!container) return null;
 
@@ -29,7 +29,7 @@ const GlobalDownloadProgress = ({ progress, message, playlistName }: { progress:
     }}>
       <Card>
         <Card.Body>
-          <Card.Title style={{ fontSize: '14px' }}>Downloading: {playlistName}</Card.Title>
+          <Card.Title style={{ fontSize: '14px' }}>{t('playlist.downloading', { playlistName })}</Card.Title>
           <ProgressBar now={progress} label={`${progress}%`} animated striped />
           <Card.Text style={{ fontSize: '11px', marginTop: '5px', color: '#666' }}>
             {message}
@@ -65,7 +65,8 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
   }
 
   downloadMusic = () => {
-    this.setState({ downloading: true, downloadProgress: 0, downloadMessage: "Preparing music download..." })
+    const { t } = this.props;
+    this.setState({ downloading: true, downloadProgress: 0, downloadMessage: t("playlist.preparing_download") })
 
     const exporter = new PlaylistExporter(
       this.props.accessToken,
@@ -109,7 +110,7 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
                     const progress = Math.round((data.track_index / data.total_tracks) * 100);
                     this.setState({ downloadProgress: progress, downloadMessage: data.message });
                   } else if (data.status === 'archived') {
-                    this.setState({ downloadProgress: 100, downloadMessage: "Finished! Downloading zip..." });
+                    this.setState({ downloadProgress: 100, downloadMessage: t("playlist.finishing_download") });
                     setTimeout(() => this.setState({ downloading: false }), 5000);
                     window.location.href = `http://localhost:3001/get-zip/${data.zipPath}`;
                   } else if (data.status === 'completed') {
@@ -136,7 +137,7 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
       })
     }).catch(err => {
       console.error("Error generating CSV data:", err);
-      this.setState({ downloading: false, downloadMessage: "Error preparing CSV" });
+      this.setState({ downloading: false, downloadMessage: t("playlist.error_preparing_csv") });
       apiCallErrorHandler(err);
     })
   }
@@ -159,13 +160,14 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
 
   render() {
     let playlist = this.props.playlist
+    const { t } = this.props;
     const icon = ['fas', (this.state.exporting ? 'sync' : 'download')]
 
     if (playlist.uri == null) return (
       <tr key={this.props.key}>
         <td>{this.renderIcon(playlist)}</td>
         <td>{playlist.name}</td>
-        <td className="d-none d-sm-table-cell" colSpan={2}>{this.props.i18n.t("playlist.not_supported")}</td>
+        <td className="d-none d-sm-table-cell" colSpan={2}>{t("playlist.not_supported")}</td>
         <td className="d-none d-sm-table-cell">{this.renderTickCross(playlist.public)}</td>
         <td className="d-none d-md-table-cell">{this.renderTickCross(playlist.collaborative)}</td>
         <td>&nbsp;</td>
@@ -179,6 +181,7 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
             progress={this.state.downloadProgress}
             message={this.state.downloadMessage}
             playlistName={this.props.playlist.name}
+            t={t}
           />
         )}
         <td>{this.renderIcon(playlist)}</td>
@@ -191,10 +194,10 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
           {/* @ts-ignore */}
           <Button type="submit" variant="primary" size="sm" onClick={this.exportPlaylist} disabled={this.state.exporting} className="text-nowrap me-1">
             {/* @ts-ignore */}
-            <FontAwesomeIcon icon={icon} size="sm" spin={this.state.exporting} /> Export CSV
+            <FontAwesomeIcon icon={icon} size="sm" spin={this.state.exporting} /> {t("playlist.export_csv")}
           </Button>
           <Button variant="success" size="sm" onClick={this.downloadMusic} disabled={this.state.downloading} className="text-nowrap">
-            <FontAwesomeIcon icon={['fas', 'music']} size="sm" spin={this.state.downloading} /> Download Music
+            <FontAwesomeIcon icon={['fas', 'music']} size="sm" spin={this.state.downloading} /> {t("playlist.download_music")}
           </Button>
         </td>
       </tr>

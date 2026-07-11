@@ -42,7 +42,13 @@
     "public": "Openbaar?",
     "collaborative": "Collaboratief?",
     "not_supported": "Deze afspeellijst wordt niet ondersteund",
-    "export": "Exporteren"
+    "export": "Exporteren",
+    "export_csv": "Exporteer CSV",
+    "download_music": "Muziek downloaden",
+    "downloading": "Downloaden: {{playlistName}}",
+    "preparing_download": "Download voorbereiden...",
+    "finishing_download": "Klaar! Zip downloaden...",
+    "error_preparing_csv": "Fout bij voorbereiden CSV"
   },
   "track": {
     "track_uri": "Nummer URI",

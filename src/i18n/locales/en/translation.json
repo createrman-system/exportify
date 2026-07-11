@@ -42,7 +42,13 @@
     "public": "Public?",
     "collaborative": "Collaborative?",
     "not_supported": "This playlist is not supported",
-    "export": "Export"
+    "export": "Export",
+    "export_csv": "Export CSV",
+    "download_music": "Download Music",
+    "downloading": "Downloading: {{playlistName}}",
+    "preparing_download": "Preparing music download...",
+    "finishing_download": "Finished! Downloading zip...",
+    "error_preparing_csv": "Error preparing CSV"
   },
   "track": {
     "track_uri": "Track URI",
@@ -86,6 +92,12 @@
       "valence": "Valence",
       "tempo": "Tempo",
       "time_signature": "Time Signature"
+    }
+  },
+  "error": {
+    "spotify": {
+      "message": "Oops, Exportify has encountered an unexpected error (5XX) while using the Spotify API. This kind of error is due to a problem on Spotify's side, and although it's rare, unfortunately all we can do is retry later.",
+      "status_link": "Keep an eye on the <a_status>Spotify Web API Status page</a_status> to see if there are any known problems right now, and then <a_retry>retry</a_retry>."
     }
   }
 }

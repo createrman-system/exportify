@@ -37,11 +37,11 @@ def report_progress(status, message, track_index=None, total_tracks=None):
         except Exception as e:
             print(f"Failed to report progress to server: {e}")
 
-report_progress("processing", "🚀 Запуск скрипта скачивания...")
+report_progress("processing", "🚀 Starting download script...")
 
 # Проверяем, существует ли CSV-файл
 if not os.path.exists(csv_path):
-    report_progress("error", f"❌ Файл не найден по пути: {csv_path}")
+    report_progress("error", f"❌ File not found at: {csv_path}")
     exit(1)
 
 # Базовые настройки yt-dlp
@@ -73,7 +73,7 @@ try:
             if not track_name:
                 continue
                 
-            report_progress("processing", f"🔍 Ищу и скачиваю: {artist_name} — {track_name}...", index + 1, total_tracks)
+            report_progress("processing", f"🔍 Searching and downloading: {artist_name} — {track_name}...", index + 1, total_tracks)
             
             search_query = f"ytsearch1:{artist_name} - {track_name}"
             safe_title = "".join([c for c in track_name if c.isalpha() or c.isdigit() or c in ' -_()']).strip()
@@ -109,15 +109,15 @@ try:
                             pass
 
                     audio.save()
-                    report_progress("success", f"✅ Успешно сохранено: {safe_title}.flac", index + 1, total_tracks)
+                    report_progress("success", f"✅ Successfully saved: {safe_title}.flac", index + 1, total_tracks)
                 else:
-                    report_progress("warning", f"⚠️ Файл {filename} не найден после конвертации.", index + 1, total_tracks)
+                    report_progress("warning", f"⚠️ File {filename} not found after conversion.", index + 1, total_tracks)
 
             except Exception as e:
-                report_progress("error", f"❌ Ошибка при скачивании трека {track_name}: {str(e)}", index + 1, total_tracks)
+                report_progress("error", f"❌ Error downloading track {track_name}: {str(e)}", index + 1, total_tracks)
 
-    report_progress("completed", "🎉 Все доступные треки из списка обработаны!")
+    report_progress("completed", "🎉 All available tracks from the list have been processed!")
 
 except Exception as e:
-    report_progress("error", f"❌ Ошибка при чтении CSV: {str(e)}")
+    report_progress("error", f"❌ Error reading CSV: {str(e)}")
     exit(1)
