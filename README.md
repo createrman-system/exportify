@@ -1,4 +1,3 @@
-[![Build Status](https://api.travis-ci.com/watsonbox/exportify.svg?branch=master)](https://travis-ci.com/github/watsonbox/exportify)
 
 <a href="https://exportify.app/"><img src="assets/screenshot.png"/></a>
 
