@@ -225,7 +225,7 @@ And then open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the b
 
 ## Contributing
 
-1. Fork it ( https://github.com/watsonbox/exportify/fork )
+1. Fork it ( https://github.com/createrman-system/exportify/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
