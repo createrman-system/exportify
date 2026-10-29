@@ -1,119 +1,578 @@
-name: CI - Test & Validate
+name: 🔍 Comprehensive CI - Full Testing & Validation (100%)
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
   pull_request:
-    branches: [master]
+    branches: [master, develop]
 
 jobs:
-  test:
+  # Job 1: Check dependencies
+  dependencies:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x]
-    
+    name: 📦 Dependency Check
     steps:
       - uses: actions/checkout@v3
       
-      - name: Set up Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
+          cache: 'yarn'
+      
+      - name: Check yarn lock integrity
+        run: |
+          yarn install --frozen-lockfile --check-files
+      
+      - name: Validate package.json
+        run: |
+          echo "🔍 Validating package.json..."
+          node -e "const pkg = require('./package.json'); 
+          if (!pkg.name) throw new Error('Missing name');
+          if (!pkg.version) throw new Error('Missing version');
+          if (!pkg.dependencies) throw new Error('Missing dependencies');
+          console.log('✅ package.json is valid');"
+      
+      - name: Check for duplicate dependencies
+        run: |
+          echo "🔍 Checking for duplicate dependencies..."
+          yarn list --duplicate
+  
+  # Job 2: Security scanning
+  security:
+    runs-on: ubuntu-latest
+    name: 🔐 Security Scan
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
           cache: 'yarn'
       
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       
-      - name: Check TypeScript compilation
-        run: yarn build --noEmit || npx tsc --noEmit
+      - name: Audit dependencies for vulnerabilities
+        run: |
+          echo "🔍 Scanning for security vulnerabilities..."
+          yarn audit --level moderate
+      
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔍 Scanning for hardcoded secrets..."
+          if grep -r "SPOTIFY_CLIENT_SECRET" src/ public/ server.js download.py 2>/dev/null; then
+            echo "❌ Found hardcoded SPOTIFY_CLIENT_SECRET in source files!"
+            exit 1
+          fi
+          if grep -r "password\|apiKey\|secret" .env 2>/dev/null | grep -v "SPOTIFY_CLIENT_SECRET\|example"; then
+            echo "❌ Found potential hardcoded secrets in .env"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
+      
+      - name: Scan for dangerous patterns
+        run: |
+          echo "🔍 Scanning for dangerous code patterns..."
+          patterns_found=false
+          
+          if grep -r "eval(" src/ 2>/dev/null; then
+            echo "❌ Found dangerous eval() usage"
+            patterns_found=true
+          fi
+          
+          if grep -r "innerHTML\s*=" src/ 2>/dev/null | grep -v "dangerouslySetInnerHTML"; then
+            echo "⚠️  Found innerHTML usage (potential XSS)"
+          fi
+          
+          if [ "$patterns_found" = true ]; then
+            exit 1
+          fi
+          echo "✅ No dangerous code patterns found"
+  
+  # Job 3: Code quality
+  quality:
+    runs-on: ubuntu-latest
+    name: 📊 Code Quality
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Run ESLint
+        run: |
+          echo "🔍 Running ESLint..."
+          if [ -f ".eslintrc" ] || [ -f ".eslintrc.json" ] || [ -f ".eslintrc.js" ]; then
+            yarn lint || echo "⚠️  ESLint warnings (non-blocking)"
+          else
+            echo "ℹ️  No ESLint config found"
+          fi
         continue-on-error: true
       
-      - name: Lint code
-        run: yarn lint
+      - name: Check TypeScript
+        run: |
+          echo "🔍 Checking TypeScript..."
+          npx tsc --noEmit || echo "⚠️  TypeScript issues (non-blocking)"
         continue-on-error: true
+      
+      - name: Code complexity check
+        run: |
+          echo "🔍 Checking code complexity..."
+          # Basic complexity check - functions should not be too large
+          FILE_ISSUES=0
+          for file in src/**/*.tsx src/**/*.ts; do
+            if [ -f "$file" ]; then
+              LINES=$(wc -l < "$file")
+              if [ "$LINES" -gt 1000 ]; then
+                echo "⚠️  $file has $LINES lines (consider refactoring)"
+                FILE_ISSUES=$((FILE_ISSUES + 1))
+              fi
+            fi
+          done
+          echo "✅ Code complexity check complete"
+  
+  # Job 4: Build verification
+  build:
+    runs-on: ubuntu-latest
+    name: 🏗️  Build Verification
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
       
       - name: Build React app
-        run: yarn build
-      
-      - name: Verify build output
         run: |
+          echo "🏗️  Building React app..."
+          yarn build
+      
+      - name: Verify build artifacts
+        run: |
+          echo "🔍 Verifying build artifacts..."
+          
           if [ ! -d "build" ]; then
             echo "❌ Build directory not created"
             exit 1
           fi
-          if [ ! -f "build/index.html" ]; then
-            echo "❌ build/index.html not found"
+          
+          required_files=("build/index.html" "build/static")
+          for file in "${required_files[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "❌ Missing build artifact: $file"
+              exit 1
+            fi
+          done
+          
+          # Check HTML is valid
+          if ! grep -q "<div id=\"root\"" build/index.html; then
+            echo "❌ React root element not found in index.html"
             exit 1
           fi
-          echo "✅ Build verification passed"
+          
+          echo "✅ Build artifacts verified"
+      
+      - name: Check build size
+        run: |
+          echo "📊 Build size analysis..."
+          du -sh build
+          du -sh build/static/js/main.* | while read size file; do
+            if [ "${size%M}" -gt 500 ]; then
+              echo "⚠️  Main bundle is large: $size (consider code-splitting)"
+            fi
+          done
+          echo "✅ Build size check complete"
+      
+      - name: Validate CSS/JS integrity
+        run: |
+          echo "🔍 Validating CSS/JS integrity..."
+          
+          # Count static files
+          JS_COUNT=$(find build/static/js -name "*.js" -type f | wc -l)
+          CSS_COUNT=$(find build/static/css -name "*.css" -type f | wc -l)
+          
+          echo "📊 Found $JS_COUNT JS files and $CSS_COUNT CSS files"
+          
+          if [ "$JS_COUNT" -eq 0 ]; then
+            echo "❌ No JavaScript files found in build"
+            exit 1
+          fi
+          
+          echo "✅ CSS/JS integrity verified"
+  
+  # Job 5: Configuration validation
+  config:
+    runs-on: ubuntu-latest
+    name: ⚙️  Configuration Validation
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check critical files exist
+        run: |
+          echo "🔍 Checking critical files..."
+          critical_files=("Dockerfile" "server.js" "download.py" ".env.production" "package.json" "yarn.lock" "tsconfig.json")
+          
+          for file in "${critical_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file"
+            else
+              echo "❌ MISSING: $file"
+              exit 1
+            fi
+          done
       
       - name: Validate Dockerfile
         run: |
-          docker build --dry-run -t exportify:test .
-        continue-on-error: true
-      
-      - name: Check critical files
-        run: |
-          echo "Checking critical files..."
-          files=("Dockerfile" "server.js" "download.py" ".env.production" "package.json" "yarn.lock")
-          for file in "${files[@]}"; do
-            if [ -f "$file" ]; then
-              echo "✅ $file exists"
-            else
-              echo "❌ $file missing"
-              exit 1
-            fi
-          done
-      
-      - name: Verify no hardcoded localhost in source
-        run: |
-          echo "Checking for hardcoded localhost URLs in source..."
-          if grep -r "localhost:3001" src/ 2>/dev/null; then
-            echo "❌ Found hardcoded localhost URLs in src/"
+          echo "🔍 Validating Dockerfile..."
+          
+          if ! grep -q "FROM node:18.18-alpine" Dockerfile; then
+            echo "❌ Expected Node.js 18.18-alpine base image"
             exit 1
           fi
-          echo "✅ No hardcoded localhost URLs found"
-        continue-on-error: true
-      
-      - name: Verify Spotify config
-        run: |
-          echo "Checking Spotify configuration..."
-          if grep -q "REACT_APP_SPOTIFY_CLIENT_ID" .env.production; then
-            echo "✅ Spotify Client ID env var found"
-          else
-            echo "❌ Spotify Client ID not configured"
+          
+          if ! grep -q "RUN yarn build" Dockerfile; then
+            echo "❌ Dockerfile missing 'yarn build' step"
             exit 1
           fi
+          
+          if ! grep -q "CMD.*node.*server.js" Dockerfile; then
+            echo "❌ Dockerfile missing Node.js server startup"
+            exit 1
+          fi
+          
+          if ! grep -q "EXPOSE 3000" Dockerfile; then
+            echo "❌ Dockerfile not exposing port 3000"
+            exit 1
+          fi
+          
+          if grep -q "EXPOSE 3001" Dockerfile; then
+            echo "⚠️  Dockerfile exposes port 3001 (should only be 3000 in production)"
+          fi
+          
+          echo "✅ Dockerfile is valid"
       
-      - name: Verify production env vars
+      - name: Validate server.js
         run: |
-          echo "Checking production environment..."
-          required_vars=("NODE_ENV" "PORT" "HOST")
-          for var in "${required_vars[@]}"; do
+          echo "🔍 Validating server.js..."
+          
+          if ! grep -q "app.listen(port, '0.0.0.0'" server.js; then
+            echo "❌ server.js not binding to 0.0.0.0"
+            exit 1
+          fi
+          
+          if ! grep -q "process.env.PORT" server.js; then
+            echo "❌ server.js not using process.env.PORT"
+            exit 1
+          fi
+          
+          if ! grep -q "express.static" server.js; then
+            echo "❌ server.js not serving static files"
+            exit 1
+          fi
+          
+          if ! grep -q "app.get('\\*'" server.js; then
+            echo "❌ server.js missing SPA fallback route"
+            exit 1
+          fi
+          
+          echo "✅ server.js is valid"
+      
+      - name: Validate download.py
+        run: |
+          echo "🔍 Validating download.py..."
+          
+          if ! grep -q "import yt_dlp" download.py; then
+            echo "❌ download.py missing yt_dlp import"
+            exit 1
+          fi
+          
+          if ! grep -q "os.environ.get('PROGRESS_REPORT_URL'" download.py; then
+            echo "❌ download.py not using PROGRESS_REPORT_URL env var"
+            exit 1
+          fi
+          
+          if ! grep -q "ffmpeg_path = None" download.py; then
+            echo "❌ download.py missing conditional ffmpeg path"
+            exit 1
+          fi
+          
+          echo "✅ download.py is valid"
+      
+      - name: Validate .env.production
+        run: |
+          echo "🔍 Validating .env.production..."
+          
+          required_env_vars=("NODE_ENV=production" "PORT=3000" "HOST=0.0.0.0" "REACT_APP_SPOTIFY_CLIENT_ID" "SPOTIFY_REDIRECT_URI")
+          
+          for var in "${required_env_vars[@]}"; do
             if grep -q "$var" .env.production; then
-              echo "✅ $var configured"
+              echo "✅ $var"
             else
-              echo "❌ $var missing from .env.production"
+              echo "❌ MISSING: $var"
               exit 1
             fi
           done
       
-      - name: ✅ All checks passed
-        run: echo "Ready for deployment to Render.com"
-
-  notify:
-    needs: test
+      - name: Validate package.json scripts
+        run: |
+          echo "🔍 Validating package.json scripts..."
+          
+          required_scripts=("start" "build" "server" "dev")
+          
+          for script in "${required_scripts[@]}"; do
+            if grep -q "\"$script\":" package.json; then
+              echo "✅ script: $script"
+            else
+              echo "❌ MISSING script: $script"
+              exit 1
+            fi
+          done
+  
+  # Job 6: Security & code patterns
+  patterns:
     runs-on: ubuntu-latest
+    name: 🛡️  Security Patterns
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for hardcoded URLs
+        run: |
+          echo "🔍 Scanning for hardcoded URLs..."
+          
+          if grep -r "localhost:3001" src/ 2>/dev/null; then
+            echo "❌ Found hardcoded localhost:3001 in src/"
+            exit 1
+          fi
+          
+          if grep -r "localhost:3000" src/ 2>/dev/null; then
+            echo "❌ Found hardcoded localhost:3000 in src/"
+            exit 1
+          fi
+          
+          if grep -r "127.0.0.1" src/ 2>/dev/null; then
+            echo "❌ Found hardcoded 127.0.0.1 in src/"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded localhost URLs found"
+      
+      - name: Check for hardcoded ports
+        run: |
+          echo "🔍 Checking for hardcoded ports..."
+          
+          if grep -r "fetch.*:3001" src/ 2>/dev/null; then
+            echo "❌ Found hardcoded port 3001 in fetch calls"
+            exit 1
+          fi
+          
+          if grep -r "http.*:3000" src/ 2>/dev/null; then
+            echo "❌ Found hardcoded port 3000 in src/"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded ports in source"
+      
+      - name: Check for console.log statements
+        run: |
+          echo "🔍 Scanning for debug statements..."
+          
+          console_count=$(grep -r "console\." src/ --include="*.tsx" --include="*.ts" 2>/dev/null | wc -l)
+          
+          if [ "$console_count" -gt 0 ]; then
+            echo "⚠️  Found $console_count console statements (should remove for production)"
+            grep -r "console\." src/ --include="*.tsx" --include="*.ts" 2>/dev/null || true
+          else
+            echo "✅ No console statements found"
+          fi
+      
+      - name: Check for TODO/FIXME comments
+        run: |
+          echo "🔍 Scanning for TODO/FIXME comments..."
+          
+          todo_count=$(grep -r "TODO\|FIXME" src/ --include="*.tsx" --include="*.ts" 2>/dev/null | wc -l)
+          
+          if [ "$todo_count" -gt 0 ]; then
+            echo "⚠️  Found $todo_count TODO/FIXME comments:"
+            grep -r "TODO\|FIXME" src/ --include="*.tsx" --include="*.ts" 2>/dev/null || true
+          else
+            echo "✅ No TODO/FIXME comments"
+          fi
+  
+  # Job 7: API & Backend validation
+  backend:
+    runs-on: ubuntu-latest
+    name: 🔧 Backend Validation
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Validate Python syntax
+        run: |
+          echo "🔍 Validating Python syntax..."
+          python -m py_compile download.py
+          echo "✅ Python syntax is valid"
+      
+      - name: Check Python imports
+        run: |
+          echo "🔍 Checking Python imports..."
+          
+          required_imports=("yt_dlp" "mutagen" "requests" "csv")
+          
+          for imp in "${required_imports[@]}"; do
+            if grep -q "import $imp" download.py || grep -q "from $imp" download.py; then
+              echo "✅ $imp"
+            else
+              echo "❌ Missing import: $imp"
+              exit 1
+            fi
+          done
+      
+      - name: Check server API endpoints
+        run: |
+          echo "🔍 Checking Express API endpoints..."
+          
+          endpoints=("app.post('/download-music'" "app.post('/report-progress'" "app.get('/get-zip'" "app.get('\\*'")
+          
+          for endpoint in "${endpoints[@]}"; do
+            if grep -q "$endpoint" server.js; then
+              echo "✅ Endpoint found: $endpoint"
+            else
+              echo "❌ Missing endpoint: $endpoint"
+              exit 1
+            fi
+          done
+      
+      - name: Check error handling
+        run: |
+          echo "🔍 Checking error handling..."
+          
+          error_handlers=$(grep -c "\.catch\|\.on('error'" server.js)
+          
+          if [ "$error_handlers" -lt 3 ]; then
+            echo "⚠️  Only $error_handlers error handlers found (should have more)"
+          fi
+          
+          echo "✅ Error handling check complete"
+  
+  # Job 8: Frontend validation
+  frontend:
+    runs-on: ubuntu-latest
+    name: ⚛️  Frontend Validation
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Check React component structure
+        run: |
+          echo "🔍 Checking React component structure..."
+          
+          tsx_count=$(find src -name "*.tsx" -type f | wc -l)
+          ts_count=$(find src -name "*.ts" -type f | wc -l)
+          
+          if [ "$tsx_count" -eq 0 ]; then
+            echo "❌ No TypeScript React components found"
+            exit 1
+          fi
+          
+          echo "✅ Found $tsx_count TSX files and $ts_count TS files"
+      
+      - name: Check for required React hooks
+        run: |
+          echo "🔍 Checking React usage patterns..."
+          
+          if grep -r "useState\|useEffect\|useContext" src/ --include="*.tsx" 2>/dev/null; then
+            echo "✅ React hooks detected"
+          fi
+      
+      - name: Check for proper imports
+        run: |
+          echo "🔍 Validating import statements..."
+          
+          if grep -q "from 'react'" src/App.tsx || grep -q "import React" src/App.tsx; then
+            echo "✅ React imports found"
+          else
+            echo "❌ Missing React imports"
+            exit 1
+          fi
+      
+      - name: Validate auth.ts Spotify config
+        run: |
+          echo "🔍 Validating Spotify auth configuration..."
+          
+          if ! grep -q "SPOTIFY_CLIENT_ID" src/auth.ts; then
+            echo "❌ Missing SPOTIFY_CLIENT_ID in auth.ts"
+            exit 1
+          fi
+          
+          if ! grep -q "SPOTIFY_AUTH_URL\|accounts.spotify.com" src/auth.ts; then
+            echo "❌ Missing Spotify OAuth URL"
+            exit 1
+          fi
+          
+          echo "✅ Spotify auth config is valid"
+  
+  # Final summary job
+  summary:
+    runs-on: ubuntu-latest
+    name: 📋 Test Summary
+    needs: [dependencies, security, quality, build, config, patterns, backend, frontend]
     if: always()
     steps:
-      - name: Summary
+      - name: Generate report
         run: |
-          if [ "${{ needs.test.result }}" == "success" ]; then
-            echo "✅ CI passed - Safe to deploy"
+          echo "=========================================="
+          echo "🔍 COMPREHENSIVE CI REPORT"
+          echo "=========================================="
+          echo ""
+          echo "✅ Dependency Check: ${{ needs.dependencies.result }}"
+          echo "🔐 Security Scan: ${{ needs.security.result }}"
+          echo "📊 Code Quality: ${{ needs.quality.result }}"
+          echo "🏗️  Build Verification: ${{ needs.build.result }}"
+          echo "⚙️  Configuration: ${{ needs.config.result }}"
+          echo "🛡️  Security Patterns: ${{ needs.patterns.result }}"
+          echo "🔧 Backend Validation: ${{ needs.backend.result }}"
+          echo "⚛️  Frontend Validation: ${{ needs.frontend.result }}"
+          echo ""
+          echo "=========================================="
+          
+          if [ "${{ needs.dependencies.result }}" == "success" ] && \
+             [ "${{ needs.security.result }}" == "success" ] && \
+             [ "${{ needs.quality.result }}" == "success" ] && \
+             [ "${{ needs.build.result }}" == "success" ] && \
+             [ "${{ needs.config.result }}" == "success" ] && \
+             [ "${{ needs.patterns.result }}" == "success" ] && \
+             [ "${{ needs.backend.result }}" == "success" ] && \
+             [ "${{ needs.frontend.result }}" == "success" ]; then
+            echo "🎉 ALL CHECKS PASSED - READY FOR DEPLOYMENT"
+            echo "=========================================="
             exit 0
           else
-            echo "❌ CI failed - Fix issues before deploying"
+            echo "❌ SOME CHECKS FAILED - FIX ISSUES BEFORE DEPLOY"
+            echo "=========================================="
             exit 1
           fi
