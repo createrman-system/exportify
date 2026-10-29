@@ -52,12 +52,23 @@ function base64urlencode(arrayBuffer: ArrayBuffer): string {
 
 // Get the redirect URI for the current location
 function getRedirectUri(): string {
+  // First try environment variable (set during build)
   const envRedirectUri = process.env.REACT_APP_SPOTIFY_REDIRECT_URI
   if (envRedirectUri) {
     return envRedirectUri
   }
-  // Fallback to current location
-  return `${window.location.protocol}//${window.location.host}/callback`
+  
+  // Fallback: Use current domain with /callback path
+  const host = window.location.hostname
+  const protocol = window.location.protocol
+  
+  // Handle common deployment domains
+  if (host.includes('render.com') || host.includes('onrender.com')) {
+    return `${protocol}//${host}/callback`
+  }
+  
+  // Default fallback
+  return `${protocol}//${host}/callback`
 }
 
 // Initiate Spotify OAuth authorization flow
