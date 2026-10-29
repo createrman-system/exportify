@@ -49,6 +49,9 @@ app.post('/download-music', upload.single('csv'), (req, res) => {
     const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
     const scriptPath = path.join(__dirname, 'download.py');
 
+    // Set progress report URL: localhost in dev, current host in production
+    const progressReportUrl = process.env.PROGRESS_REPORT_URL || 'http://localhost:3001/report-progress';
+
     let command;
     let args;
 
@@ -62,7 +65,9 @@ app.post('/download-music', upload.single('csv'), (req, res) => {
     }
 
     console.log(`Launching: ${command} ${args.join(' ')}`);
-    const pythonProcess = spawn(command, args);
+    const pythonProcess = spawn(command, args, {
+        env: { ...process.env, PROGRESS_REPORT_URL: progressReportUrl }
+    });
 
     pythonProcess.on('close', (code) => {
         if (code === 0) {
