@@ -52,7 +52,12 @@ function base64urlencode(arrayBuffer: ArrayBuffer): string {
 
 // Get the redirect URI for the current location
 function getRedirectUri(): string {
-  return [window.location.protocol, '//', window.location.host, window.location.pathname].join('')
+  const envRedirectUri = process.env.REACT_APP_SPOTIFY_REDIRECT_URI
+  if (envRedirectUri) {
+    return envRedirectUri
+  }
+  // Fallback to current location
+  return `${window.location.protocol}//${window.location.host}/callback`
 }
 
 // Initiate Spotify OAuth authorization flow
