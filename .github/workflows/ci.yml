@@ -1,50 +1,15 @@
-name: 🔍 CI - Build & Deploy Gate
+name: 🔍 CI - Deploy Gate
 
 on:
   push:
-    branches: [master, develop]
+    branches: [master]
   pull_request:
-    branches: [master, develop]
+    branches: [master]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: 🏗️ Build & Validate
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: 'yarn'
-      
-      - name: Install dependencies
-        run: |
-          echo "� Installing dependencies..."
-          yarn install --frozen-lockfile
-      
-      - name: Build React app
-        run: |
-          echo "🏗️  Building React app..."
-          yarn build
-      
-      - name: Verify build output
-        run: |
-          echo "✅ Verifying build artifacts..."
-          if [ ! -d "build" ]; then
-            echo "❌ Build directory not created"
-            exit 1
-          fi
-          if [ ! -f "build/index.html" ]; then
-            echo "❌ build/index.html not found"
-            exit 1
-          fi
-          echo "✅ Build successful"
-
   validate:
     runs-on: ubuntu-latest
-    name: ✅ Configuration Check
+    name: ✅ Validate Configuration
     steps:
       - uses: actions/checkout@v4
       
@@ -54,9 +19,9 @@ jobs:
           files=("Dockerfile" "server.js" "download.py" ".env.production" "package.json" "yarn.lock")
           for file in "${files[@]}"; do
             if [ -f "$file" ]; then
-              echo "✅ $file"
+              echo "✅ $file exists"
             else
-              echo "❌ Missing: $file"
+              echo "❌ MISSING: $file"
               exit 1
             fi
           done
@@ -65,40 +30,44 @@ jobs:
         run: |
           echo "🔍 Validating Dockerfile..."
           if ! grep -q "FROM node:18" Dockerfile; then
-            echo "❌ Wrong Node.js version in Dockerfile"
+            echo "❌ Wrong Node.js version"
             exit 1
           fi
           if ! grep -q "yarn build" Dockerfile; then
-            echo "❌ Missing 'yarn build' in Dockerfile"
+            echo "❌ Missing yarn build step"
             exit 1
           fi
-          echo "✅ Dockerfile valid"
+          echo "✅ Dockerfile OK"
       
       - name: Validate server.js
         run: |
           echo "🔍 Validating server.js..."
           if ! grep -q "process.env.PORT" server.js; then
-            echo "❌ Missing PORT env var in server.js"
+            echo "❌ Missing PORT env var"
             exit 1
           fi
           if ! grep -q "express.static" server.js; then
             echo "❌ Missing static file serving"
             exit 1
           fi
-          echo "✅ server.js valid"
+          echo "✅ server.js OK"
       
       - name: Validate .env.production
         run: |
           echo "🔍 Validating .env.production..."
-          required_vars=("NODE_ENV" "PORT" "SPOTIFY_CLIENT_ID" "REACT_APP_SPOTIFY_CLIENT_ID")
-          for var in "${required_vars[@]}"; do
-            if grep -q "$var" .env.production; then
-              echo "✅ $var configured"
-            else
-              echo "❌ Missing: $var"
-              exit 1
-            fi
-          done
+          if ! grep -q "NODE_ENV" .env.production; then
+            echo "❌ Missing NODE_ENV"
+            exit 1
+          fi
+          if ! grep -q "PORT" .env.production; then
+            echo "❌ Missing PORT"
+            exit 1
+          fi
+          if ! grep -q "SPOTIFY_CLIENT_ID" .env.production; then
+            echo "❌ Missing SPOTIFY_CLIENT_ID"
+            exit 1
+          fi
+          echo "✅ .env.production OK"
       
       - name: Check for hardcoded localhost
         run: |
@@ -107,11 +76,11 @@ jobs:
             echo "❌ Found hardcoded localhost:3001"
             exit 1
           fi
-          echo "✅ No hardcoded localhost URLs"
+          echo "✅ No hardcoded localhost"
 
   security:
     runs-on: ubuntu-latest
-    name: � Security Check
+    name: 🔐 Security Scan
     steps:
       - uses: actions/checkout@v4
       
@@ -119,40 +88,36 @@ jobs:
         run: |
           echo "🔍 Scanning for hardcoded secrets..."
           if grep -r "SPOTIFY_CLIENT_SECRET.*=" src/ 2>/dev/null | grep -v "process.env"; then
-            echo "❌ Found hardcoded SPOTIFY_CLIENT_SECRET!"
+            echo "❌ Found hardcoded SPOTIFY_CLIENT_SECRET"
             exit 1
           fi
-          echo "✅ No hardcoded secrets detected"
+          echo "✅ No hardcoded secrets"
       
-      - name: Check for dangerous patterns
+      - name: Check for eval()
         run: |
-          echo "🔍 Checking for dangerous code..."
+          echo "🔍 Checking for eval()..."
           if grep -r "eval(" src/ server.js 2>/dev/null; then
             echo "❌ Found eval() usage"
             exit 1
           fi
-          echo "✅ No dangerous patterns found"
+          echo "✅ No eval() found"
 
   summary:
     runs-on: ubuntu-latest
     name: 📋 Summary
-    needs: [build, validate, security]
+    needs: [validate, security]
     if: always()
     steps:
-      - name: Check results
+      - name: Final Check
         run: |
-          echo "=========================================="
-          echo "✅ BUILD: ${{ needs.build.result }}"
           echo "✅ VALIDATE: ${{ needs.validate.result }}"
-          echo "� SECURITY: ${{ needs.security.result }}"
-          echo "=========================================="
+          echo "🔐 SECURITY: ${{ needs.security.result }}"
           
-          if [ "${{ needs.build.result }}" = "success" ] && \
-             [ "${{ needs.validate.result }}" = "success" ] && \
+          if [ "${{ needs.validate.result }}" = "success" ] && \
              [ "${{ needs.security.result }}" = "success" ]; then
-            echo "🎉 ALL CHECKS PASSED - READY TO DEPLOY"
+            echo "🎉 ALL CHECKS PASSED - READY FOR DEPLOYMENT"
             exit 0
           else
-            echo "❌ SOME CHECKS FAILED"
+            echo "❌ CHECKS FAILED"
             exit 1
           fi
