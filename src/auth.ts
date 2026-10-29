@@ -108,28 +108,42 @@ export async function exchangeCodeForToken(code: string): Promise<string> {
     throw new Error('Code verifier not found in localStorage')
   }
 
-  const response = await axios.post(
-    SPOTIFY_TOKEN_URL,
-    new URLSearchParams({
-      client_id: SPOTIFY_CLIENT_ID,
-      grant_type: "authorization_code",
-      code: code,
-      redirect_uri: redirectUri,
-      code_verifier: codeVerifier,
-    }),
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+  console.log('DEBUG: Exchanging code for token')
+  console.log('DEBUG: Code:', code)
+  console.log('DEBUG: Redirect URI:', redirectUri)
+  console.log('DEBUG: Client ID:', SPOTIFY_CLIENT_ID)
+
+  try {
+    const response = await axios.post(
+      SPOTIFY_TOKEN_URL,
+      new URLSearchParams({
+        client_id: SPOTIFY_CLIENT_ID,
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    )
+
+    const accessToken = response.data.access_token
+
+    // Save token and clean up code verifier
+    saveAccessToken(accessToken)
+
+    return accessToken
+  } catch (error: any) {
+    console.error('DEBUG: Token exchange failed')
+    console.error('DEBUG: Error:', error.message)
+    if (error.response?.data) {
+      console.error('DEBUG: Spotify response:', error.response.data)
     }
-  )
-
-  const accessToken = response.data.access_token
-
-  // Save token and clean up code verifier
-  saveAccessToken(accessToken)
-
-  return accessToken
+    throw error
+  }
 }
 
 // Logout and optionally redirect to change user
