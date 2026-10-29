@@ -1,6 +1,10 @@
-# Fly.io configuration for Exportify
+# fly.toml app configuration file generated for exportify on 2026-10-29T16:38:33Z
+#
+# See https://docs.fly.io/reference/configuration for information about how to use this file.
+#
+
 app = "exportify"
-primary_region = "iad"
+primary_region = 'iad'
 
 [build]
   dockerfile = "Dockerfile"
@@ -12,7 +16,7 @@ primary_region = "iad"
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
 
@@ -27,3 +31,6 @@ primary_region = "iad"
     timeout = "5s"
     method = "GET"
     path = "/"
+
+[deploy]
+  strategy = 'immediate'
