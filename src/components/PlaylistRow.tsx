@@ -74,12 +74,14 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
       this.props.config
     )
 
+    const apiBase = process.env.REACT_APP_API_BASE || window.location.origin;
+
     exporter.csvData().then(csvData => {
       const blob = new Blob([csvData], { type: "text/csv" })
       const formData = new FormData()
       formData.append('csv', blob, 'playlist.csv')
 
-      fetch('http://localhost:3001/download-music', {
+      fetch(`${apiBase}/download-music`, {
         method: 'POST',
         body: formData
       }).then(response => {
@@ -112,7 +114,7 @@ class PlaylistRow extends React.Component<PlaylistRowProps> {
                   } else if (data.status === 'archived') {
                     this.setState({ downloadProgress: 100, downloadMessage: t("playlist.finishing_download") });
                     setTimeout(() => this.setState({ downloading: false }), 5000);
-                    window.location.href = `http://localhost:3001/get-zip/${data.zipPath}`;
+                    window.location.href = `${apiBase}/get-zip/${data.zipPath}`;
                   } else if (data.status === 'completed') {
                     this.setState({ downloadMessage: data.message });
                   } else if (data.status === 'error' || data.status === 'warning') {

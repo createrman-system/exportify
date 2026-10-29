@@ -13,6 +13,12 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from React build directory in production
+const buildPath = path.join(__dirname, 'build');
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+}
+
 // Store active response streams
 const activeStreams = new Map();
 
@@ -99,6 +105,16 @@ app.get('/get-zip/:filename', (req, res) => {
         res.download(filePath);
     } else {
         res.status(404).send('File not found');
+    }
+});
+
+// Serve React app for all other routes (SPA fallback)
+app.get('*', (req, res) => {
+    const indexPath = path.join(__dirname, 'build', 'index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).send('Not found');
     }
 });
 

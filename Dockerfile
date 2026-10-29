@@ -11,12 +11,14 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+# Build React app
 RUN yarn build
 
-EXPOSE 3000
-EXPOSE 3001
-
+# Set environment variables for production
 ENV NODE_ENV=production
 ENV PORT=3000
 
-CMD ["yarn", "dev"]
+EXPOSE 3000
+
+# Start server (which will serve the built React app + API)
+CMD ["node", "server.js"]
