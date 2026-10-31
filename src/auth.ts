@@ -4,7 +4,7 @@
 
 import axios from "axios"
 
-const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID || "635997c2e863482bb26d810e9b467982"
+const SPOTIFY_CLIENT_ID = "9950ac751e34487dbbe027c4fd7f8e99"
 const SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 const SPOTIFY_SCOPES = "playlist-read-private playlist-read-collaborative user-library-read"
@@ -52,23 +52,7 @@ function base64urlencode(arrayBuffer: ArrayBuffer): string {
 
 // Get the redirect URI for the current location
 function getRedirectUri(): string {
-  // First try environment variable (set during build)
-  const envRedirectUri = process.env.REACT_APP_SPOTIFY_REDIRECT_URI
-  if (envRedirectUri) {
-    return envRedirectUri
-  }
-  
-  // Fallback: Use current domain with /callback path
-  const host = window.location.hostname
-  const protocol = window.location.protocol
-  
-  // Handle common deployment domains
-  if (host.includes('render.com') || host.includes('onrender.com')) {
-    return `${protocol}//${host}/callback`
-  }
-  
-  // Default fallback
-  return `${protocol}//${host}/callback`
+  return [window.location.protocol, '//', window.location.host, window.location.pathname].join('')
 }
 
 // Initiate Spotify OAuth authorization flow
@@ -108,42 +92,28 @@ export async function exchangeCodeForToken(code: string): Promise<string> {
     throw new Error('Code verifier not found in localStorage')
   }
 
-  console.log('DEBUG: Exchanging code for token')
-  console.log('DEBUG: Code:', code)
-  console.log('DEBUG: Redirect URI:', redirectUri)
-  console.log('DEBUG: Client ID:', SPOTIFY_CLIENT_ID)
-
-  try {
-    const response = await axios.post(
-      SPOTIFY_TOKEN_URL,
-      new URLSearchParams({
-        client_id: SPOTIFY_CLIENT_ID,
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: redirectUri,
-        code_verifier: codeVerifier,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    )
-
-    const accessToken = response.data.access_token
-
-    // Save token and clean up code verifier
-    saveAccessToken(accessToken)
-
-    return accessToken
-  } catch (error: any) {
-    console.error('DEBUG: Token exchange failed')
-    console.error('DEBUG: Error:', error.message)
-    if (error.response?.data) {
-      console.error('DEBUG: Spotify response:', error.response.data)
+  const response = await axios.post(
+    SPOTIFY_TOKEN_URL,
+    new URLSearchParams({
+      client_id: SPOTIFY_CLIENT_ID,
+      grant_type: "authorization_code",
+      code: code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     }
-    throw error
-  }
+  )
+
+  const accessToken = response.data.access_token
+
+  // Save token and clean up code verifier
+  saveAccessToken(accessToken)
+
+  return accessToken
 }
 
 // Logout and optionally redirect to change user

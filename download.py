@@ -27,9 +27,7 @@ def report_progress(status, message, track_index=None, total_tracks=None):
     # Report to Web UI via server callback
     if session_id:
         try:
-            # Use localhost:3001 for local development, or current origin for production
-            api_url = os.environ.get('PROGRESS_REPORT_URL', 'http://localhost:3001/report-progress')
-            requests.post(api_url, json={
+            requests.post('http://localhost:3001/report-progress', json={
                 "sessionId": session_id,
                 "status": status,
                 "message": message,
@@ -47,14 +45,10 @@ if not os.path.exists(csv_path):
     exit(1)
 
 # Базовые настройки yt-dlp
-# In production (Linux/Alpine), ffmpeg is installed system-wide via apk
-# In development (Windows), try to use bundled ffmpeg from lib/ffmpegWin64/bin
-ffmpeg_path = None
-if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib', 'ffmpegWin64', 'bin')):
-    ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib', 'ffmpegWin64', 'bin')
-
+ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib', 'ffmpegWin64', 'bin')
 ydl_opts = {
     'format': 'bestaudio/best',
+    'ffmpeg_location': ffmpeg_path,
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'flac',
@@ -65,10 +59,6 @@ ydl_opts = {
     'no_warnings': False, # Show warnings in terminal
     'quiet': False       # Show progress in terminal
 }
-
-# Only set ffmpeg_location if it exists
-if ffmpeg_path:
-    ydl_opts['ffmpeg_location'] = ffmpeg_path
 
 # Читаем CSV файл
 try:

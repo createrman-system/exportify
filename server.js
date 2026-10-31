@@ -8,16 +8,10 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 3001;
 
 app.use(cors());
 app.use(express.json());
-
-// Serve static files from React build directory in production
-const buildPath = path.join(__dirname, 'build');
-if (fs.existsSync(buildPath)) {
-  app.use(express.static(buildPath));
-}
 
 // Store active response streams
 const activeStreams = new Map();
@@ -49,9 +43,6 @@ app.post('/download-music', upload.single('csv'), (req, res) => {
     const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
     const scriptPath = path.join(__dirname, 'download.py');
 
-    // Set progress report URL: localhost in dev, current host in production
-    const progressReportUrl = process.env.PROGRESS_REPORT_URL || 'http://localhost:3001/report-progress';
-
     let command;
     let args;
 
@@ -65,9 +56,7 @@ app.post('/download-music', upload.single('csv'), (req, res) => {
     }
 
     console.log(`Launching: ${command} ${args.join(' ')}`);
-    const pythonProcess = spawn(command, args, {
-        env: { ...process.env, PROGRESS_REPORT_URL: progressReportUrl }
-    });
+    const pythonProcess = spawn(command, args);
 
     pythonProcess.on('close', (code) => {
         if (code === 0) {
@@ -113,16 +102,6 @@ app.get('/get-zip/:filename', (req, res) => {
     }
 });
 
-// Serve React app for all other routes (SPA fallback)
-app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'build', 'index.html');
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
-    } else {
-        res.status(404).send('Not found');
-    }
-});
-
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on port ${port}`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });
